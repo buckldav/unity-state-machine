@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -35,6 +38,10 @@ public class PlayerController : MonoBehaviour
     /// <param>percent</param>: A range of 0.0f to 1.0f for movement strength.
     /// </summary>
     void MoveX(float percent) {
+        if (percent < 0.0f || percent > 1.0f) {
+            throw new ArgumentException(String.Format("{0} is not in the range of [0.0f, 1.0f].", percent), "percent");
+        }
+
         float xHat = new Vector2(Input.GetAxis("Horizontal"), 0).normalized.x;
         float vx = xHat * xSpeed * percent;
         rb.AddForce(transform.right * vx);
@@ -86,6 +93,11 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground") {
             isGrounded = true;
+        }
+
+        if (collision.gameObject.tag == "Enemy") {
+            // Respawn
+            SceneManager.LoadScene(0);
         }
     }
 }
